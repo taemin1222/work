@@ -3,132 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StoreMap — 서울 큐레이션 상점 지도 (No-DB Vanilla JS)</title>
-  <meta name="description" content="데이터베이스 없이 순수 바닐라 자바스크립트로 동작하는 카테고리별 서울 핫스팟 및 상점 큐레이션 지도 웹애플리케이션">
+  <title>ONCE, ONE'S BY JOSUN HOTEL — 1인 프리미엄 공간 & 상품 쇼케이스</title>
+  <meta name="description" content="조선호텔앤리조트의 1인 전용 프리미엄 호캉스 브랜드 ONCE, ONE'S 공식 쇼케이스. Track A 프라이빗 스위트부터 Track B 소셜 와인 살롱, 시그니처 1인 패키지까지.">
 
-  <!-- Pretendard Modern Web Font -->
+  <!-- Fonts: Pretendard & Luxury Serif -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-
-  <!-- Leaflet CSS for Map Rendering -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
-  <!-- Application Stylesheets -->
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/showcase.css">
 </head>
 <body>
 
-  <!-- App Header -->
-  <header class="app-header">
-    <div class="brand-area">
-      <div class="brand-logo-icon">S</div>
-      <div class="brand-titles">
-        <h1 class="brand-name">StoreMap</h1>
-        <span class="brand-tagline">SEOUL CURATED SPOTS &middot; NO-DB VANILLA JS</span>
+  <!-- Luxury Sticky Navbar -->
+  <header class="luxury-navbar">
+    <a href="#" class="nav-brand">
+      <div class="brand-emblem">O</div>
+      <div class="brand-title-wrap">
+        <span class="brand-logo-text">ONCE, ONE'S</span>
+        <span class="brand-subtext">BY JOSUN HOTEL &amp; RESORTS</span>
       </div>
-    </div>
+    </a>
 
-    <!-- Search & Region Filters -->
-    <div class="header-controls">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="상점명, 주소, #태그 검색..." 
-          autocomplete="off"
-        />
-        <button id="searchClearBtn" class="search-clear-btn" aria-label="검색어 지우기">&times;</button>
-      </div>
+    <div class="nav-actions">
+      <button class="btn-nav-curator" id="btnNavCurator">
+        <span>✨ 1인 취향 큐레이터</span>
+      </button>
 
-      <select id="guSelect" class="filter-select" aria-label="지역(구) 선택">
-        <option value="all">전체 지역 (서울)</option>
-      </select>
-
-      <div class="header-meta-badge">
-        <span>⚡ Pure Vanilla JS</span>
-      </div>
+      <button class="btn-cart-toggle" id="btnCartToggle" aria-label="장바구니 열기">
+        <span>🛍️</span>
+        <span class="cart-count-badge" id="cartBadge" style="display: none;">0</span>
+      </button>
     </div>
   </header>
 
-  <!-- Main Container (Sidebar + Interactive Map) -->
-  <main class="main-container">
-    
-    <!-- Left Sidebar: Category Filters & Store Cards -->
-    <aside class="sidebar">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-pill">✦ JOSUN SOLO LUXURY STAYCATION</div>
+      <h1 class="hero-title">
+        "혼자인데,<br>
+        이렇게 <span>대접받아도</span> 되나요?"
+      </h1>
+      <p class="hero-subtitle">
+        한 번 와도, 혼자 와도 우리 사람 —<br>
+        타인의 시선에서 완전히 자유로운 <strong>Track A (완벽한 사적 휴식)</strong>와<br>
+        취향 기반의 느슨한 연대를 선사하는 <strong>Track B (소셜 와인 살롱)</strong>를 만나보세요.
+      </p>
       
-      <!-- Category Chips Filter -->
-      <nav class="category-bar-wrapper" aria-label="카테고리 필터">
-        <div id="categoryChips" class="category-chips">
-          <!-- Dynamically Rendered by UiService -->
-        </div>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" id="btnHeroCurator">
+          <span>✨ 나만의 1인 코스 진단하기</span>
+        </button>
+        <button class="btn-hero-secondary" id="btnHeroVideo">
+          <span>🎬 18초 브랜드 스토리 감상</span>
+        </button>
+        <button class="btn-hero-secondary" id="btnHeroCardnews">
+          <span>📰 공식 카드뉴스 보기</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Showcase Container -->
+  <main class="showcase-container">
+    
+    <!-- Control Card: Tabs & Filters -->
+    <div class="showcase-control-card">
+      
+      <!-- Primary Tab Switcher: Spaces vs Products -->
+      <nav class="main-tab-switcher" aria-label="메인 쇼케이스 탭">
+        <button class="main-tab-btn active" id="tabBtnSpaces">
+          <span>🏛️</span> 공간 (SPACES)
+        </button>
+        <button class="main-tab-btn" id="tabBtnProducts">
+          <span>🎁</span> 상품 · 패키지 (PRODUCTS)
+        </button>
       </nav>
 
-      <!-- List Header Summary & Sort -->
-      <div class="list-summary-bar">
-        <span id="summaryCount" class="summary-count">총 <span>0</span>개의 스팟</span>
-        <select id="sortSelect" class="sort-select" aria-label="정렬 기준">
-          <option value="rating">★ 평점 높은순</option>
-          <option value="reviews">💬 리뷰 많은순</option>
-          <option value="name">가나다순</option>
-        </select>
-      </div>
-
-      <!-- Store Cards Container -->
-      <section id="storeListContainer" class="store-list-container" aria-label="상점 목록">
-        <!-- Dynamically Populated by UiService -->
-      </section>
-
-    </aside>
-
-    <!-- Right Map Viewport -->
-    <section class="map-container" aria-label="지도 영역">
-      <div id="map"></div>
-
-      <!-- Floating Controls -->
-      <div class="map-floating-controls">
-        <button id="btnResetView" class="map-control-btn" title="전체 서울 뷰 리셋" aria-label="전체 뷰 리셋">
-          🎯
-        </button>
-        <button id="btnLocateMe" class="map-control-btn" title="현재 내 위치" aria-label="내 위치 찾기">
-          🧭
-        </button>
-      </div>
-
-      <!-- Map Legend Overlay -->
-      <div class="map-legend">
-        <div class="legend-title">Categories</div>
-        <div class="legend-items">
-          <div class="legend-item"><span class="legend-dot" style="background-color: var(--cat-dining);"></span>다이닝</div>
-          <div class="legend-item"><span class="legend-dot" style="background-color: var(--cat-cafe);"></span>카페</div>
-          <div class="legend-item"><span class="legend-dot" style="background-color: var(--cat-bar);"></span>와인바</div>
-          <div class="legend-item"><span class="legend-dot" style="background-color: var(--cat-bakery);"></span>베이커리</div>
-          <div class="legend-item"><span class="legend-dot" style="background-color: var(--cat-lifestyle);"></span>소품샵</div>
+      <!-- Sub Filters Row -->
+      <div class="sub-filter-row">
+        <div class="filter-chips-wrap" id="filterChipsWrap">
+          <!-- Dynamically populated by appShowcase.js -->
+        </div>
+        <div class="filter-meta-text" id="filterMetaCount">
+          총 <span>0</span>개의 항목
         </div>
       </div>
+
+    </div>
+
+    <!-- Cards Grid -->
+    <section class="cards-grid" id="cardsGridContainer" aria-label="쇼케이스 카드 목록">
+      <!-- Dynamically Rendered by spaceService.js & productService.js -->
     </section>
 
   </main>
 
-  <!-- Store Detail Modal Overlay -->
-  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true">
-    <div id="modalContent">
-      <!-- Injected by UiService.openDetailModal() -->
+  <!-- Cart Drawer (Right Slide-in) -->
+  <aside class="cart-drawer-overlay" id="cartDrawerOverlay">
+    <div class="cart-drawer">
+      <div class="cart-header">
+        <div class="cart-title">
+          <span>🛍️</span> 1인 위시리스트 &amp; 장바구니
+        </div>
+        <button class="btn-cart-close" id="btnCartClose" aria-label="닫기">&times;</button>
+      </div>
+
+      <div class="cart-items-wrap">
+        <!-- Injected by cartService.js -->
+      </div>
+
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span class="total-label">예상 결제 금액</span>
+          <span class="total-amount">₩0</span>
+        </div>
+        <button class="btn-cart-checkout">
+          1인 패키지 예약 진행하기 &rarr;
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal Dialog Backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div id="modalContainer">
+      <!-- Injected by modalService.js -->
     </div>
   </div>
 
-  <!-- Leaflet JavaScript CDN -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toastMsg">알림 메시지</div>
 
-  <!-- Application Logic Modules -->
-  <script src="data/stores.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/mapService.js"></script>
-  <script src="js/filterService.js"></script>
-  <script src="js/uiService.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Luxury Footer -->
+  <footer class="luxury-footer">
+    <div class="footer-content">
+      <div>
+        <div class="footer-brand-title">ONCE, ONE'S BY JOSUN HOTEL</div>
+        <p class="footer-copy">
+          조선호텔앤리조트 1인 프리미엄 호캉스 서브 브랜드<br>
+          사업장: 레스케이프 호텔 · 웨스틴 조선 서울 · 그랜드 조선 부산<br>
+          고객 컨시어지 센터: 02-317-4000 &middot; 서울특별시 중구 소공로 106
+        </p>
+      </div>
+      <div>
+        <p class="footer-copy" style="text-align: right;">
+          No-Database Pure Vanilla JS &amp; Static Architecture<br>
+          Designed for Solo Luxury Staycation Experiences<br>
+          &copy; 2026 JOSUN HOTEL &amp; RESORTS. All Rights Reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Scripts (No DB, Pure Vanilla JS) -->
+  <script src="data/spaces.js"></script>
+  <script src="data/products.js"></script>
+  <script src="js/spaceService.js"></script>
+  <script src="js/productService.js"></script>
+  <script src="js/cartService.js"></script>
+  <script src="js/quizService.js"></script>
+  <script src="js/modalService.js"></script>
+  <script src="js/appShowcase.js"></script>
 
 </body>
 </html>
